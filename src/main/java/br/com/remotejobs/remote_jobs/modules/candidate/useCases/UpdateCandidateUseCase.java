@@ -1,6 +1,7 @@
 package br.com.remotejobs.remote_jobs.modules.candidate.useCases;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.remotejobs.remote_jobs.exceptions.CandidateAlreadyExistsException;
@@ -10,6 +11,9 @@ import br.com.remotejobs.remote_jobs.modules.candidate.CandidateRepository;
 
 @Service
 public class UpdateCandidateUseCase {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
     private CandidateRepository candidateRepository;
 
@@ -37,7 +41,8 @@ public class UpdateCandidateUseCase {
             candidateUpdated.setName(candidate.getName());
         }
         if (candidate.getPassword() != null) {
-            candidateUpdated.setPassword(candidate.getPassword());
+            var password = passwordEncoder.encode(candidate.getPassword());
+            candidateUpdated.setPassword(password);
         }
         if (candidate.getUsername() != null) {
             candidateUpdated.setUsername(candidate.getUsername());
