@@ -9,7 +9,6 @@ import br.com.remotejobs.remote_jobs.modules.candidate.CandidateRepository;
 
 @Service
 public class CreateCandidateUseCase {
-    
     @Autowired
     private CandidateRepository candidateRepository;
 
