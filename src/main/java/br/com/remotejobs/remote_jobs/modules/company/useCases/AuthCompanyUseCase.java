@@ -1,5 +1,9 @@
 package br.com.remotejobs.remote_jobs.modules.company.useCases;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
+
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,8 @@ public class AuthCompanyUseCase {
         var token = JWT.create()
             .withIssuer("remotejobs")
             .withSubject(Integer.toString(company.getId()))
+            .withClaim("roles", Arrays.asList("company"))
+            .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
             .sign(algorithm);
         
         return token;

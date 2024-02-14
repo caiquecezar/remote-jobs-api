@@ -7,10 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.remotejobs.remote_jobs.modules.company.CompanyEntity;
 import br.com.remotejobs.remote_jobs.modules.company.JobEntity;
+import br.com.remotejobs.remote_jobs.modules.company.dto.CreateJobDto;
 import br.com.remotejobs.remote_jobs.modules.company.useCases.CreateJobUseCase;
 import br.com.remotejobs.remote_jobs.modules.company.useCases.FindJobUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +31,14 @@ public class JobController {
     private FindJobUseCase findJobsUseCase;
 
     @PostMapping("/")
-    public ResponseEntity<Object> create(@Valid @RequestBody JobEntity job) {
+    public ResponseEntity<Object> create(@Valid @RequestBody CreateJobDto jobDto, HttpServletRequest request) {
         try {
+            var companyId = request.getAttribute("companyId").toString();
+            var job = JobEntity.builder()
+                .companyId(Integer.parseInt(companyId))
+                .description(jobDto.getDescription())
+                .title(jobDto.getTitle())
+                .build();
             var result = this.createJobUseCase.execute(job);
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
