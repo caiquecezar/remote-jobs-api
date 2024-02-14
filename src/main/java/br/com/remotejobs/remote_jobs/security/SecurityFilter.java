@@ -39,7 +39,14 @@ public class SecurityFilter extends OncePerRequestFilter {
                 return;
             }
 
-            request.setAttribute(this.jwtProvider.getRole(authorization), subjectToken);
+            var role = this.jwtProvider.getRole(authorization);
+    
+            if (role.equals("candidate")) {
+                request.setAttribute("candidateId", subjectToken);
+            } else {
+                request.setAttribute("companyId", subjectToken);
+            }
+
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(subjectToken, null,
                     Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(auth);

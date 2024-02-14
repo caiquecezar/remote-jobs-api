@@ -52,8 +52,10 @@ public class JWTProvider {
             throw new Exception("Token verification failed", e);
         }
 
-        Claim rolesClaim = jwt.getClaim("roles");
-        if (rolesClaim.isNull() || rolesClaim.isNull() || rolesClaim.asArray(String.class).length == 0) {
+        var claims = jwt.getClaims();
+        var rolesClaim = claims.get("roles");
+
+        if (rolesClaim.isNull() || rolesClaim.asArray(String.class).length == 0) {
             throw new Exception("Token does not contain roles claim");
         }
 

@@ -9,6 +9,7 @@ import br.com.remotejobs.remote_jobs.exceptions.JobDoesntExistsException;
 import br.com.remotejobs.remote_jobs.modules.candidate.CandidateRepository;
 import br.com.remotejobs.remote_jobs.modules.candidate.JobApplicationEntity;
 import br.com.remotejobs.remote_jobs.modules.candidate.JobApplicationRepository;
+import br.com.remotejobs.remote_jobs.modules.candidate.dto.CandidateJobAplicationDto;
 import br.com.remotejobs.remote_jobs.modules.company.JobRepository;
 
 @Service
@@ -22,14 +23,13 @@ public class CandidateAppliesInAJobUseCase {
     @Autowired
     private JobApplicationRepository jobApplicationRepository;
 
-
-    public JobApplicationEntity execute(int candidateId, int jobId) {
+    public CandidateJobAplicationDto execute(int candidateId, int jobId) {
         var candidate = this.candidateRepository.findById(candidateId);
         if (!candidate.isPresent()) {
             throw new CandidateDoesntExistsException();
         }
-        
-        var job = this.jobRepository.findById(candidateId);
+
+        var job = this.jobRepository.findById(jobId);
         if (!job.isPresent()) {
             throw new JobDoesntExistsException();
         }
@@ -38,11 +38,20 @@ public class CandidateAppliesInAJobUseCase {
         if (applicationJob.isPresent()) {
             throw new CandidateAlreadyAppliedInJob();
         }
-    
+
         var application = new JobApplicationEntity();
         application.setCandidateId(candidateId);
         application.setJobId(jobId);
 
-        return this.jobApplicationRepository.save(application);
-    }
+        this.jobApplicationRepository.save(application);
+
+        var candidateJob = CandidateJobAplicationDto.builder()
+                .candidateId(candidate.get().getId())
+                .candidateName(candidate.get().getName())
+                .jobId(job.get().getId())
+                .jobTitle(job.get().getTitle())
+                .build();
+
+       return candidateJob;         
+    }  
 }
